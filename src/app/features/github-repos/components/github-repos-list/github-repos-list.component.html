@@ -1,0 +1,7 @@
+<div>Github repo browser</div>
+
+<ul>
+  <li *ngFor="let repo of repos" (click)="navigateToDetails(repo.id)">
+    {{ repo.name }}
+  </li>
+</ul>
