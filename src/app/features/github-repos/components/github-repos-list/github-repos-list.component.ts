@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { Subject, takeUntil } from 'rxjs';
 
-import { GithubReposApiService } from '../../services/github-repos-api.serivce';
+import { GithubReposApiService } from '../../services/github-repos-api.service';
 import { GithubRepo } from '../../../../core/interfaces/github-repo.interface';
-import { GithubReposResponse } from 'src/app/core/interfaces/github-repos-response.interface';
+import { GithubReposResponse } from '../../../../core/interfaces/github-repos-response.interface';
 
 @Component({
   selector: 'app-github-repos-list',
