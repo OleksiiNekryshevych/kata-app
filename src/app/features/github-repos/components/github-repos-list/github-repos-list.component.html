@@ -2,6 +2,6 @@
 
 <ul>
   <li *ngFor="let repo of repos" (click)="navigateToDetails(repo.id)">
-    {{ repo.name }}
+    {{ repo.owner.login }} / {{ repo.name }} ({{ repo.watchers }})
   </li>
 </ul>

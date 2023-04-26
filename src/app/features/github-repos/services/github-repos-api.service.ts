@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { GithubReposResponse } from '../../../core/interfaces/github-repos-response.interface';
+import { GithubRepo } from 'src/app/core/interfaces/github-repo.interface';
 
 const githubApiUrl = 'https://api.github.com';
 
@@ -16,7 +17,9 @@ export class GithubReposApiService {
     );
   }
 
-  public getRepoById(id: number): Observable<unknown> {
-    return this.httpClient.get<unknown>(`${githubApiUrl}/repositories/${id}`);
+  public getRepoById(id: number): Observable<GithubRepo> {
+    return this.httpClient.get<GithubRepo>(
+      `${githubApiUrl}/repositories/${id}`
+    );
   }
 }
