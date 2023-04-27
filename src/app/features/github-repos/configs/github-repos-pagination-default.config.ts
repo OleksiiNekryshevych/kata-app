@@ -1,6 +1,6 @@
 import { GithubPaginationParams } from '../interfaces/github-pagination-params.interface';
 
-export const GithubReposPaginationDefaultConfig: GithubPaginationParams = {
+export const githubReposPaginationDefaultConfig: GithubPaginationParams = {
   page: 1,
   perPage: 100,
   q: 'stars:>30000',

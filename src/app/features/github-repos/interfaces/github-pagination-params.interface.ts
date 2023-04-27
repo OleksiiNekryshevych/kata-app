@@ -1,3 +1,5 @@
+import { OrderType } from '../../../core/types/oreder-type.type';
+
 export interface GithubPaginationParams {
   q: string;
   page: number;
@@ -5,5 +7,3 @@ export interface GithubPaginationParams {
   sort: string;
   order: OrderType;
 }
-
-export type OrderType = 'desc' | 'asc';

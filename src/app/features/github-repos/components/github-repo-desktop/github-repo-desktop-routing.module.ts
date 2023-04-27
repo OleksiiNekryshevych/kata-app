@@ -1,5 +1,6 @@
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
+
 import { GithubRepoDesktopComponent } from './github-repo-desktop.component';
 import { GithubRepoDetailsComponent } from '../github-repo-details/github-repo-details.component';
 

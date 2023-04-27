@@ -27,11 +27,11 @@
     align-items: center;
     min-height: 32px;
     border-radius: 3px;
-    background-color: #fafafa;
+    background-color: var(--color-light-grey);
     transition: 0.3s;
 
     &:hover {
-      background-color: #d1c4e9;
+      background-color: var(--color-primary-purpure-accent);
       cursor: pointer;
     }
   }

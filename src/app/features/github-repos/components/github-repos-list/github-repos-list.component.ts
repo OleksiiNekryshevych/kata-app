@@ -1,14 +1,13 @@
-import { GithubPaginationParams } from '../../interfaces/github-pagination-params.interface';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { finalize, Subject, takeUntil } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs';
 
 import { GithubReposApiService } from '../../services/github-repos-api.service';
 import { GithubRepo } from '../../interfaces/github-repo.interface';
 import { GithubReposResponse } from '../../interfaces/github-repos-response.interface';
-import { ListPageComponent } from 'src/app/core/utils/list-page.component';
-import { GithubReposPaginationDefaultConfig } from '../../configs/github-repos-pagination-default.config';
+import { ListPageComponent } from '../../../../core/utils/list-page.component';
+import { githubReposPaginationDefaultConfig } from '../../configs/github-repos-pagination-default.config';
 
 @Component({
   selector: 'app-github-repos-list',
@@ -40,7 +39,7 @@ export class GithubReposListComponent
 
     this.githubReposApiService
       .getGithubRepos({
-        ...GithubReposPaginationDefaultConfig,
+        ...githubReposPaginationDefaultConfig,
         page: this.currentPage,
       })
       .pipe(

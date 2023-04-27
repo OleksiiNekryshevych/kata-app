@@ -8,8 +8,7 @@ import { GithubReposResponse } from '../interfaces/github-repos-response.interfa
 import { GithubPaginationParams } from '../interfaces/github-pagination-params.interface';
 import { GithubReadmeResponse } from '../interfaces/github-readme-response.interface';
 import { GithubRepoQueryParameter } from '../interfaces/github-repo-query-params.interface';
-
-const githubApiUrl = 'https://api.github.com';
+import { githubApiUrl } from '../configs/github-api-url.config';
 
 @Injectable({ providedIn: 'root' })
 export class GithubReposApiService {
