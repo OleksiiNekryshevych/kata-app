@@ -1,18 +1,22 @@
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { GithubReposListComponent } from './components/github-repos-list/github-repos-list.component';
-import { GithubRepoDetailsComponent } from './components/github-repo-details/github-repo-details.component';
 
 const routes: Routes = [
   {
     path: 'repositories',
-    component: GithubReposListComponent,
+    loadChildren: () =>
+      window.innerWidth > 768 //TODO: move to enum
+        ? import(
+            './components/github-repo-desktop/github-repo-desktop.module'
+          ).then((m) => m.GithubRepoDesktopModule)
+        : import(
+            './components/github-repo-mobile/github-repo-mobile.module'
+          ).then((m) => m.GithubRepoMobileModule),
   },
   {
-    path: 'repositories/:id',
-    component: GithubRepoDetailsComponent,
+    path: '**',
+    redirectTo: 'repositories',
   },
-  { path: '**', redirectTo: 'repositories' },
 ];
 
 @NgModule({
