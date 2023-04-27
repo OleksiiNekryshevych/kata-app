@@ -1,12 +1,14 @@
-<div>Github repo browser</div>
-
-<ul
-  infinite-scroll
-  [infiniteScrollDistance]="2"
-  [infiniteScrollThrottle]="300"
-  (scrolled)="onScroll()"
->
-  <li *ngFor="let repo of repos" (click)="navigateToDetails(repo.id)">
-    {{ repo.owner.login }} / {{ repo.name }} ({{ repo.watchers }})
-  </li>
-</ul>
+<div class="github-repo-list__container" #infiniteScrollContainer>
+  <ul
+    class="github-repo-list__list"
+    infinite-scroll
+    [infiniteScrollDistance]="2"
+    [infiniteScrollThrottle]="300"
+    [infiniteScrollContainer]="infiniteScrollContainer"
+    (scrolled)="onScroll()"
+  >
+    <li *ngFor="let repo of repos" (click)="navigateToDetails(repo.id)">
+      {{ repo.owner.login }} / {{ repo.name }} ({{ repo.watchers }})
+    </li>
+  </ul>
+</div>

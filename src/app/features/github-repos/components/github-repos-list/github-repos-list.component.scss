@@ -1,0 +1,13 @@
+.github-repo-list {
+  &__container {
+    border: 3px solid green;
+    max-height: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+  &__list {
+    margin: 0;
+    padding: 0;
+    border: 5px dotted palegreen;
+  }
+}
