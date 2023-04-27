@@ -13,5 +13,5 @@ export interface GithubRepo {
   size: number;
   topics: string[];
   updated_at: string;
-  watchers: number; //stars
+  watchers: number;
 }

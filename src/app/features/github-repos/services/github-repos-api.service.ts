@@ -13,7 +13,7 @@ export class GithubReposApiService {
 
   public getGithubRepos(): Observable<GithubReposResponse> {
     return this.httpClient.get<GithubReposResponse>(
-      `${githubApiUrl}/search/repositories?q=stars:>0&sort=stars&order=desc&page=1&per_page=30` //TODO: handle queryParams properly
+      `${githubApiUrl}/search/repositories?q=stars:>80000&sort=stars&order=desc&page=1&per_page=30` //TODO: handle queryParams properly
     );
   }
 
