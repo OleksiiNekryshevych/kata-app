@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+
 import { Observable } from 'rxjs';
 
+import { GithubRepo } from '../../../core/interfaces/github-repo.interface';
 import { GithubReposResponse } from '../../../core/interfaces/github-repos-response.interface';
-import { GithubRepo } from 'src/app/core/interfaces/github-repo.interface';
+import { GithubReposListParams } from '../../../core/interfaces/github-repos-list-params.interface';
 
 const githubApiUrl = 'https://api.github.com';
 
@@ -11,9 +13,11 @@ const githubApiUrl = 'https://api.github.com';
 export class GithubReposApiService {
   constructor(private httpClient: HttpClient) {}
 
-  public getGithubRepos(): Observable<GithubReposResponse> {
+  public getGithubRepos(
+    params: GithubReposListParams
+  ): Observable<GithubReposResponse> {
     return this.httpClient.get<GithubReposResponse>(
-      `${githubApiUrl}/search/repositories?q=stars:>80000&sort=stars&order=desc&page=1&per_page=30` //TODO: handle queryParams properly
+      `${githubApiUrl}/search/repositories?q=stars:>${params.starts}&sort=stars&order=${params.order}&page=${params.page}&per_page=${params.perPage}` //TODO: handle queryParams properly
     );
   }
 

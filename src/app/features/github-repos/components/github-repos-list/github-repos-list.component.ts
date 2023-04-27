@@ -1,3 +1,4 @@
+import { GithubReposListParams } from './../../../../core/interfaces/github-repos-list-params.interface';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -7,6 +8,13 @@ import { GithubReposApiService } from '../../services/github-repos-api.service';
 import { GithubRepo } from '../../../../core/interfaces/github-repo.interface';
 import { GithubReposResponse } from '../../../../core/interfaces/github-repos-response.interface';
 
+const DefaultParams: GithubReposListParams = {
+  page: 1,
+  starts: 30000,
+  perPage: 100,
+  order: 'desc',
+};
+
 @Component({
   selector: 'app-github-repos-list',
   templateUrl: './github-repos-list.component.html',
@@ -14,6 +22,7 @@ import { GithubReposResponse } from '../../../../core/interfaces/github-repos-re
 })
 export class GithubReposListComponent implements OnInit {
   private subscriptionSub = new Subject(); //TODO replace with Directive or class
+  private page = 1;
 
   public repos: GithubRepo[] = [];
 
@@ -36,12 +45,18 @@ export class GithubReposListComponent implements OnInit {
     this.subscriptionSub.complete();
   }
 
+  public onScroll(): void {
+    this.page++;
+    console.log('scroll - page: ', this.page);
+    this.fetchGithubRepos();
+  }
+
   private fetchGithubRepos(): void {
     this.githubReposApiService
-      .getGithubRepos()
+      .getGithubRepos({ ...DefaultParams, page: this.page })
       .pipe(takeUntil(this.subscriptionSub))
       .subscribe((response: GithubReposResponse) => {
-        this.repos = response.items;
+        this.repos = [...this.repos, ...response.items];
       });
   }
 }
