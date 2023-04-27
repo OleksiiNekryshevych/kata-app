@@ -5,7 +5,7 @@ const routes: Routes = [
   {
     path: 'repositories',
     loadChildren: () =>
-      window.innerWidth > 768 //TODO: move to enum
+      window.innerWidth > 768
         ? import(
             './components/github-repo-desktop/github-repo-desktop.module'
           ).then((m) => m.GithubRepoDesktopModule)
