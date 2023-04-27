@@ -9,7 +9,7 @@
     (scrolled)="onScroll()"
   >
     <li
-      *ngFor="let repo of repos; trackBy: trackById"
+      *ngFor="let repo of listItems; trackBy: trackById"
       class="github-repo-list__item"
       (click)="navigateToDetails(repo.id)"
     >
