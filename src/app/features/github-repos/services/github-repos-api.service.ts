@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
 
-import { GithubRepo } from '../../../core/interfaces/github-repo.interface';
-import { GithubReposResponse } from '../../../core/interfaces/github-repos-response.interface';
-import { GithubReposListParams } from '../../../core/interfaces/github-repos-list-params.interface';
-import { GithubReadmeResponse } from '../../../core/interfaces/github-readme-response.interface';
+import { GithubRepo } from '../interfaces/github-repo.interface';
+import { GithubReposResponse } from '../interfaces/github-repos-response.interface';
+import { GithubPaginationParams } from '../interfaces/github-pagination-params.interface';
+import { GithubReadmeResponse } from '../interfaces/github-readme-response.interface';
+import { GithubRepoQueryParameter } from '../interfaces/github-repo-query-params.interface';
 
 const githubApiUrl = 'https://api.github.com';
 
@@ -15,10 +16,30 @@ export class GithubReposApiService {
   constructor(private httpClient: HttpClient) {}
 
   public getGithubRepos(
-    params: GithubReposListParams
+    params: GithubPaginationParams
   ): Observable<GithubReposResponse> {
+    let queryParams = new HttpParams();
+    queryParams = queryParams.append(
+      GithubRepoQueryParameter.PAGE,
+      params.page
+    );
+    queryParams = queryParams.append(
+      GithubRepoQueryParameter.PER_PAGE,
+      params.perPage
+    );
+    queryParams = queryParams.append(GithubRepoQueryParameter.QUERY, params.q);
+    queryParams = queryParams.append(
+      GithubRepoQueryParameter.ORDER,
+      params.order
+    );
+    queryParams = queryParams.append(
+      GithubRepoQueryParameter.SORT,
+      params.sort
+    );
+
     return this.httpClient.get<GithubReposResponse>(
-      `${githubApiUrl}/search/repositories?q=stars:>${params.starts}&sort=stars&order=${params.order}&page=${params.page}&per_page=${params.perPage}` //TODO: handle queryParams properly
+      `${githubApiUrl}/search/repositories`,
+      { params: queryParams }
     );
   }
 

@@ -10,8 +10,14 @@ const routes: Routes = [
     path: '',
     component: GithubRepoMobileComponent,
     children: [
-      { path: '', component: GithubReposListComponent },
-      { path: ':id', component: GithubRepoDetailsComponent },
+      {
+        path: '',
+        component: GithubReposListComponent,
+      },
+      {
+        path: ':id',
+        component: GithubRepoDetailsComponent,
+      },
     ],
   },
 ];

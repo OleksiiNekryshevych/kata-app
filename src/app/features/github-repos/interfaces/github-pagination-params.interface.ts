@@ -1,7 +1,8 @@
-export interface GithubReposListParams {
+export interface GithubPaginationParams {
+  q: string;
   page: number;
-  starts: number;
   perPage: number;
+  sort: string;
   order: OrderType;
 }
 

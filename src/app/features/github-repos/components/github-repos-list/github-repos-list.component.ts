@@ -1,18 +1,20 @@
-import { GithubReposListParams } from './../../../../core/interfaces/github-repos-list-params.interface';
+import { GithubPaginationParams } from '../../interfaces/github-pagination-params.interface';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { finalize, Subject, takeUntil } from 'rxjs';
 
 import { GithubReposApiService } from '../../services/github-repos-api.service';
-import { GithubRepo } from '../../../../core/interfaces/github-repo.interface';
-import { GithubReposResponse } from '../../../../core/interfaces/github-repos-response.interface';
+import { GithubRepo } from '../../interfaces/github-repo.interface';
+import { GithubReposResponse } from '../../interfaces/github-repos-response.interface';
+import { DestroyableDirective } from '../../../../core/directives/destroyable.directive';
 
-const DefaultParams: GithubReposListParams = {
+const DefaultParams: GithubPaginationParams = {
   page: 1,
-  starts: 30000,
+  q: 'stars:>30000',
   perPage: 100,
   order: 'desc',
+  sort: 'stars',
 };
 
 @Component({
@@ -20,8 +22,10 @@ const DefaultParams: GithubReposListParams = {
   templateUrl: './github-repos-list.component.html',
   styleUrls: ['./github-repos-list.component.scss'],
 })
-export class GithubReposListComponent implements OnInit {
-  private subscriptionSub = new Subject(); //TODO replace with Directive or class
+export class GithubReposListComponent
+  extends DestroyableDirective
+  implements OnInit
+{
   private page = 1;
 
   public isLoading = false;
@@ -31,7 +35,9 @@ export class GithubReposListComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private githubReposApiService: GithubReposApiService
-  ) {}
+  ) {
+    super();
+  }
 
   public ngOnInit(): void {
     this.fetchGithubRepos();
@@ -41,18 +47,13 @@ export class GithubReposListComponent implements OnInit {
     this.router.navigate([id], { relativeTo: this.route });
   }
 
-  public ngOnDestroy(): void {
-    this.subscriptionSub.next(null);
-    this.subscriptionSub.complete();
-  }
-
   public onScroll(): void {
     this.page++;
     console.log('scroll - page: ', this.page);
     this.fetchGithubRepos();
   }
 
-  public trackById(index: number, item: GithubRepo): number {
+  public trackById(_: number, item: GithubRepo): number {
     return item.id;
   }
 
@@ -65,7 +66,7 @@ export class GithubReposListComponent implements OnInit {
         finalize(() => {
           this.isLoading = false;
         }),
-        takeUntil(this.subscriptionSub)
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (response: GithubReposResponse) =>

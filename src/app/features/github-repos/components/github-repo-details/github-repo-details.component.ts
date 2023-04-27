@@ -1,37 +1,36 @@
-import { GithubReadmeResponse } from './../../../../core/interfaces/github-readme-response.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { BehaviorSubject, filter, Subject, switchMap, takeUntil } from 'rxjs';
+import { filter, Subject, switchMap, takeUntil } from 'rxjs';
 
-import { GithubReposApiService } from './../../services/github-repos-api.service';
-import { GithubRepo } from './../../../../core/interfaces/github-repo.interface';
+import { DestroyableDirective } from '../../../../core/directives/destroyable.directive';
+import { GithubReposApiService } from '../../services/github-repos-api.service';
+import { GithubRepo } from '../../interfaces/github-repo.interface';
+import { GithubReadmeResponse } from '../../interfaces/github-readme-response.interface';
 
 @Component({
   selector: 'app-github-repo-details',
   templateUrl: './github-repo-details.component.html',
   styleUrls: ['./github-repo-details.component.scss'],
 })
-export class GithubRepoDetailsComponent implements OnInit, OnDestroy {
+export class GithubRepoDetailsComponent
+  extends DestroyableDirective
+  implements OnInit, OnDestroy
+{
   public repo$: Subject<GithubRepo> = new Subject<GithubRepo>();
   public readme: string = '';
-
-  private subscriptionSub = new Subject(); //TODO replace with Directive or class
 
   public constructor(
     private route: ActivatedRoute,
     private router: Router,
     private githubReposApiService: GithubReposApiService
-  ) {}
+  ) {
+    super();
+  }
 
   public ngOnInit(): void {
     this.listenRepoId();
     this.listenRepoReadme();
-  }
-
-  public ngOnDestroy(): void {
-    this.subscriptionSub.next(null);
-    this.subscriptionSub.complete();
   }
 
   private listenRepoId(): void {
@@ -41,7 +40,7 @@ export class GithubRepoDetailsComponent implements OnInit, OnDestroy {
         switchMap((params) => {
           return this.githubReposApiService.getRepoById(params['id']);
         }),
-        takeUntil(this.subscriptionSub)
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: (repo: GithubRepo) => this.handleRepoLoaded(repo),
