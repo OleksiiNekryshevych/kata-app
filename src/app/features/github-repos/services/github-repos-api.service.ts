@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { GithubRepo } from '../../../core/interfaces/github-repo.interface';
 import { GithubReposResponse } from '../../../core/interfaces/github-repos-response.interface';
 import { GithubReposListParams } from '../../../core/interfaces/github-repos-list-params.interface';
+import { GithubReadmeResponse } from '../../../core/interfaces/github-readme-response.interface';
 
 const githubApiUrl = 'https://api.github.com';
 
@@ -25,5 +26,9 @@ export class GithubReposApiService {
     return this.httpClient.get<GithubRepo>(
       `${githubApiUrl}/repositories/${id}`
     );
+  }
+
+  public getRepoReadme(url: string): Observable<GithubReadmeResponse> {
+    return this.httpClient.get<GithubReadmeResponse>(`${url}/readme`);
   }
 }

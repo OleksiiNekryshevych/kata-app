@@ -1,0 +1,19 @@
+.github-repo-details {
+  &__container {
+    padding: 16px 24px;
+    max-width: 100%;
+    background-color: #e8eaf6;
+  }
+
+  &__header {
+    margin-bottom: 24px;
+  }
+
+  &__title {
+    margin-bottom: 14px;
+  }
+
+  &__readme {
+    overflow: hidden;
+  }
+}

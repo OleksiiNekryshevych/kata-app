@@ -1,6 +1,7 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LayoutModule } from '@angular/cdk/layout';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -9,7 +10,13 @@ import { GithubAuthInterceptor } from './core/interceptors/github-auth.intercept
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, LayoutModule, AppRoutingModule, HttpClientModule],
+  imports: [
+    BrowserModule,
+    LayoutModule,
+    AppRoutingModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+  ],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,

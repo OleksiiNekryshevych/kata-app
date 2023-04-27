@@ -2,7 +2,7 @@ import { GithubReposListParams } from './../../../../core/interfaces/github-repo
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Subject, takeUntil } from 'rxjs';
+import { finalize, Subject, takeUntil } from 'rxjs';
 
 import { GithubReposApiService } from '../../services/github-repos-api.service';
 import { GithubRepo } from '../../../../core/interfaces/github-repo.interface';
@@ -24,6 +24,7 @@ export class GithubReposListComponent implements OnInit {
   private subscriptionSub = new Subject(); //TODO replace with Directive or class
   private page = 1;
 
+  public isLoading = false;
   public repos: GithubRepo[] = [];
 
   constructor(
@@ -51,12 +52,29 @@ export class GithubReposListComponent implements OnInit {
     this.fetchGithubRepos();
   }
 
+  public trackById(index: number, item: GithubRepo): number {
+    return item.id;
+  }
+
   private fetchGithubRepos(): void {
+    this.isLoading = true;
+
     this.githubReposApiService
       .getGithubRepos({ ...DefaultParams, page: this.page })
-      .pipe(takeUntil(this.subscriptionSub))
-      .subscribe((response: GithubReposResponse) => {
-        this.repos = [...this.repos, ...response.items];
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        }),
+        takeUntil(this.subscriptionSub)
+      )
+      .subscribe({
+        next: (response: GithubReposResponse) =>
+          this.handleReposUpdate(response),
+        error: (error) => alert(error['message']),
       });
+  }
+
+  private handleReposUpdate(response: GithubReposResponse): void {
+    this.repos = [...this.repos, ...response.items];
   }
 }

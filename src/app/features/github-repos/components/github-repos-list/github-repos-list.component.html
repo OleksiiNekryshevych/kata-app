@@ -1,4 +1,5 @@
 <div class="github-repo-list__container" #infiniteScrollContainer>
+  <h1 class="github-repo-list__title">GitHub Repo Browser</h1>
   <ul
     class="github-repo-list__list"
     infinite-scroll
@@ -7,8 +8,15 @@
     [infiniteScrollContainer]="infiniteScrollContainer"
     (scrolled)="onScroll()"
   >
-    <li *ngFor="let repo of repos" (click)="navigateToDetails(repo.id)">
+    <li
+      *ngFor="let repo of repos; trackBy: trackById"
+      class="github-repo-list__item"
+      (click)="navigateToDetails(repo.id)"
+    >
       {{ repo.owner.login }} / {{ repo.name }} ({{ repo.watchers }})
     </li>
+    <ng-container *ngIf="isLoading">
+      <mat-spinner></mat-spinner>
+    </ng-container>
   </ul>
 </div>

@@ -1,5 +1,26 @@
-<ng-container *ngIf="repo">
-  <div>{{ repo.full_name }}</div>
-  <div>{{ repo.id }}</div>
-  <p>{{ repo.description }}</p>
+<ng-container *ngIf="repo$ | async as repo">
+  <div class="github-repo-details__container">
+    <mat-card class="github-repo-details__header">
+      <mat-card-title-group>
+        <mat-card-title class="github-repo-details__title">
+          {{ repo.name }}
+        </mat-card-title>
+        <mat-card-subtitle>
+          <div>Owner: {{ repo.owner.login }}</div>
+          <div>Last update: {{ repo.updated_at | date }}</div>
+        </mat-card-subtitle>
+        <img mat-card-sm-image [src]="repo.owner.avatar_url" />
+      </mat-card-title-group>
+      <mat-card-content>
+        {{ repo.description }}
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="github-repo-details__readme">
+      <mat-card-title class="github-repo-details__title">
+        README.md
+      </mat-card-title>
+      <div [innerHTML]="readme | markdown"></div>
+    </mat-card>
+  </div>
 </ng-container>
