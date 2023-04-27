@@ -7,7 +7,7 @@ import { GithubReposApiService } from './../../services/github-repos-api.service
 import { GithubRepo } from './../../../../core/interfaces/github-repo.interface';
 
 @Component({
-  selector: 'app-github-repos-list',
+  selector: 'app-github-repo-details',
   templateUrl: './github-repo-details.component.html',
   styleUrls: ['./github-repo-details.component.scss'],
 })
