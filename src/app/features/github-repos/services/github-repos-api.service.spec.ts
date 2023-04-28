@@ -35,7 +35,6 @@ describe('GithubReposApiService', () => {
 
   describe('getGithubRepos', () => {
     it('should return an Observable<GithubReposResponse>', () => {
-      const githubApiUrl = 'https://api.github.com';
       const mockResponse: GithubReposResponse = { total_count: 100, items: [] };
       const params: GithubPaginationParams = {
         page: 1,
@@ -89,7 +88,7 @@ describe('GithubReposApiService', () => {
       });
 
       const req = httpMock.expectOne(
-        `https://api.github.com/repositories/${expectedRepo.id}`
+        `${githubApiUrl}/repositories/${expectedRepo.id}`
       );
 
       expect(req.request.method).toBe('GET');
@@ -99,8 +98,8 @@ describe('GithubReposApiService', () => {
   });
 
   describe('getRepoReadme', () => {
-    it('should return an Observable<GithubReadmeResponse>', () => {
-      const mockUrl = 'https://api.github.com/repos/test-repo';
+    it('should return base64 readme content', () => {
+      const mockUrl = `${githubApiUrl}/repos/test-repo`;
       const mockResponse: GithubReadmeResponse = {
         name: 'README.md',
         content: 'VGhpcyBpcyBhIHRlc3QgdGV4dAo=',
