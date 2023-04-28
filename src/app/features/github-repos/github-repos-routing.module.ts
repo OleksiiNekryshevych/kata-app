@@ -1,17 +1,19 @@
+import { GithubRepoDetailsComponent } from './components/github-repo-details/github-repo-details.component';
 import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
+
+import { GithubReposComponent } from './github-repos.component';
 
 const routes: Routes = [
   {
     path: 'repositories',
-    loadChildren: () =>
-      window.innerWidth > 768
-        ? import(
-            './components/github-repo-desktop/github-repo-desktop.module'
-          ).then((m) => m.GithubRepoDesktopModule)
-        : import(
-            './components/github-repo-mobile/github-repo-mobile.module'
-          ).then((m) => m.GithubRepoMobileModule),
+    component: GithubReposComponent,
+    children: [
+      {
+        path: ':id',
+        component: GithubRepoDetailsComponent,
+      },
+    ],
   },
   {
     path: '**',

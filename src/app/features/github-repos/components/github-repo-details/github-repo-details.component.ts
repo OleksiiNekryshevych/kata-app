@@ -1,7 +1,8 @@
+import { BreakpointService } from './../../../../core/services/breakpoints.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { filter, Subject, switchMap, takeUntil } from 'rxjs';
+import { filter, Subject, switchMap, takeUntil, Observable } from 'rxjs';
 
 import { DestroyableDirective } from '../../../../core/directives/destroyable.directive';
 import { GithubReposApiService } from '../../services/github-repos-api.service';
@@ -18,12 +19,14 @@ export class GithubRepoDetailsComponent
   implements OnInit, OnDestroy
 {
   public repo$: Subject<GithubRepo> = new Subject<GithubRepo>();
+  public isMobile$: Observable<boolean> = this.breakpointService.isMobile();
   public readme: string = '';
 
   public constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private githubReposApiService: GithubReposApiService
+    private githubReposApiService: GithubReposApiService,
+    private breakpointService: BreakpointService
   ) {
     super();
   }

@@ -1,3 +1,5 @@
+<button *ngIf="isMobile$ | async">toggle</button>
+
 <ng-container *ngIf="repo$ | async as repo">
   <div class="github-repo-details__container">
     <mat-card class="github-repo-details__header">

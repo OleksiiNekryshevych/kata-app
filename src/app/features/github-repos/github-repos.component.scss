@@ -1,0 +1,11 @@
+.github-repos {
+  &__container {
+    height: 100%;
+  }
+
+  &__sidenav {
+    &--fluid {
+      width: 100%;
+    }
+  }
+}
