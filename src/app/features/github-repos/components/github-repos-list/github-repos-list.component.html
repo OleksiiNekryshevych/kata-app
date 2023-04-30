@@ -1,4 +1,8 @@
-<div class="github-repo-list__container" #infiniteScrollContainer>
+<div
+  class="github-repo-list__container"
+  [ngClass]="{ 'github-repo-list__container--mobile': isMobile$ | async }"
+  #infiniteScrollContainer
+>
   <h1 class="github-repo-list__title">GitHub Repo Browser</h1>
   <ul
     class="github-repo-list__list"

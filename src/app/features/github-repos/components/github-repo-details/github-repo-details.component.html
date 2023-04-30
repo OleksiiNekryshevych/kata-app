@@ -1,6 +1,3 @@
-<!-- <button *ngIf="isMobile$ | async" (click)="navigateToReposList()">close</button> -->
-<button (click)="closeDetails()">close</button>
-
 <ng-container *ngIf="repo$ | async as repo">
   <div class="github-repo-details__container">
     <mat-card class="github-repo-details__header">

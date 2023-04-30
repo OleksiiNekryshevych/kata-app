@@ -24,18 +24,7 @@ export class AppComponent extends DestroyableDirective implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.setInitialState();
     this.listenBreakpoints();
-  }
-
-  private setInitialState(): void {
-    const device: Device = this.breakpointObserver.isMatched([
-      Breakpoints.XSmall,
-      Breakpoints.Small,
-    ])
-      ? 'mobile'
-      : 'desktop';
-    this.breakpointService.setDeviceType(device);
   }
 
   private listenBreakpoints(): void {

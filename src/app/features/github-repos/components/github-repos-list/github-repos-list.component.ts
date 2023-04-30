@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -6,7 +7,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { finalize, takeUntil } from 'rxjs';
+import { finalize, takeUntil, Observable } from 'rxjs';
 
 import { GithubReposApiService } from '../../services/github-repos-api.service';
 import { GithubReposService } from '../../services/github-repos.service';
@@ -14,6 +15,7 @@ import { GithubRepo } from '../../interfaces/github-repo.interface';
 import { GithubReposResponse } from '../../interfaces/github-repos-response.interface';
 import { ListPageComponent } from '../../../../core/utils/list-page.component';
 import { githubReposPaginationDefaultConfig } from '../../configs/github-repos-pagination-default.config';
+import { BreakpointService } from 'src/app/core/services/breakpoints.service';
 
 @Component({
   selector: 'app-github-repos-list',
@@ -23,13 +25,16 @@ import { githubReposPaginationDefaultConfig } from '../../configs/github-repos-p
 })
 export class GithubReposListComponent
   extends ListPageComponent<GithubRepo>
-  implements OnInit
+  implements OnInit, AfterViewInit
 {
+  public isMobile$: Observable<boolean> = this.breakpointService.isMobile();
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private githubReposApiService: GithubReposApiService,
     private githubReposService: GithubReposService,
+    private breakpointService: BreakpointService,
     private cdr: ChangeDetectorRef
   ) {
     super();
@@ -39,6 +44,10 @@ export class GithubReposListComponent
     super.ngOnInit();
 
     this.listenReposList();
+  }
+
+  public ngAfterViewInit(): void {
+    this.breakpointService.checkCurrentState();
   }
 
   public navigateToDetails(id: number): void {

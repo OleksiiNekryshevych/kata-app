@@ -22,7 +22,13 @@ import {
   of,
   map,
 } from 'rxjs';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
 import {
   BreakpointObserver,
   Breakpoints,
@@ -36,6 +42,7 @@ import { GithubReposService } from './services/github-repos.service';
   selector: 'app-github-repos',
   templateUrl: './github-repos.component.html',
   styleUrls: ['./github-repos.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GithubReposComponent
   extends DestroyableDirective
@@ -46,6 +53,7 @@ export class GithubReposComponent
     false
   );
 
+  public fluidMode: boolean;
   public viewMode: MatDrawerMode = 'side';
 
   @ViewChild('sideNav') private sideNav: MatSidenav;
@@ -56,7 +64,8 @@ export class GithubReposComponent
     private githubReposService: GithubReposService,
     private githubReposApiService: GithubReposApiService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     super();
   }
@@ -80,27 +89,29 @@ export class GithubReposComponent
       .subscribe((isMobile: boolean) => {
         this.isMobile$.next(isMobile);
         this.updateViewMode();
+        this.cdr.markForCheck();
       });
   }
 
   private updateViewMode(): void {
     this.viewMode = this.isMobile$.value ? 'over' : 'side';
-
-    this.isMobile$.value
-      ? this.handleSideNavForMobile()
-      : this.handleSideNavForDesktop();
+    this.fluidMode = this.viewMode === 'over';
+    this.updateSideNav();
   }
 
   private handleSideNavForMobile(): void {
-    this.route.firstChild?.params.pipe(take(1)).subscribe((params) => {
-      const event = params['id'] ? SideNavbarEvent.CLOSE : SideNavbarEvent.OPEN;
+    this.githubReposService
+      .getSelectedRepoId()
+      .pipe(take(1))
+      .subscribe((id) => {
+        const event = id ? SideNavbarEvent.CLOSE : SideNavbarEvent.OPEN;
 
-      this.sideNavbarEventsService.sendEvent(event);
-    });
+        this.sideNavbarEventsService.sendEvent(event);
+      });
   }
 
   private handleSideNavForDesktop(): void {
-    if (this.sideNav.opened) return;
+    if (this.sideNav?.opened) return;
 
     this.sideNavbarEventsService.sendEvent(SideNavbarEvent.OPEN);
   }
@@ -112,11 +123,13 @@ export class GithubReposComponent
         switchMap((repoId) =>
           repoId ? this.githubReposApiService.getRepoById(repoId) : of(null)
         ),
+        tap(() => this.updateSideNav()),
         takeUntil(this.destroy$)
       )
-      .subscribe((repo: GithubRepo | null) =>
-        this.githubReposService.selectRepo(repo)
-      );
+      .subscribe((repo: GithubRepo | null) => {
+        this.githubReposService.selectRepo(repo);
+        this.cdr.markForCheck();
+      });
   }
 
   private checkRepoId(): void {
@@ -153,5 +166,11 @@ export class GithubReposComponent
 
   private getRepoIdFromRoute(): number | null {
     return this.route.snapshot.firstChild?.params['id'] || null;
+  }
+
+  private updateSideNav(): void {
+    this.isMobile$.value
+      ? this.handleSideNavForMobile()
+      : this.handleSideNavForDesktop();
   }
 }

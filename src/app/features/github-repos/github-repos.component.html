@@ -1,7 +1,7 @@
 <mat-sidenav-container class="github-repos__container">
   <mat-sidenav
-    class="github-repos__sidenav"
-    [ngClass]="{ 'github-repos__sidenav--fluid': viewMode === 'over' }"
+    class="github-repos__side-nav"
+    [ngClass]="{ 'github-repos__sidenav--fluid': fluidMode }"
     [mode]="viewMode"
     [opened]="isOpen$ | async"
     #sideNav

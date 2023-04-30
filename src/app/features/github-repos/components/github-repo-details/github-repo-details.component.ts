@@ -28,13 +28,11 @@ export class GithubRepoDetailsComponent
 {
   public repo$: Observable<GithubRepo | null> =
     this.githubReposService.getSelectedRepo();
-  public isMobile$: Observable<boolean> = this.breakpointService.isMobile();
   public readme: string = '';
 
   public constructor(
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private breakpointService: BreakpointService,
     private githubReposApiService: GithubReposApiService,
     private githubReposService: GithubReposService
   ) {
