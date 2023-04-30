@@ -1,9 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { finalize, takeUntil } from 'rxjs';
 
 import { GithubReposApiService } from '../../services/github-repos-api.service';
+import { GithubReposService } from '../../services/github-repos.service';
 import { GithubRepo } from '../../interfaces/github-repo.interface';
 import { GithubReposResponse } from '../../interfaces/github-repos-response.interface';
 import { ListPageComponent } from '../../../../core/utils/list-page.component';
@@ -13,6 +19,7 @@ import { githubReposPaginationDefaultConfig } from '../../configs/github-repos-p
   selector: 'app-github-repos-list',
   templateUrl: './github-repos-list.component.html',
   styleUrls: ['./github-repos-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GithubReposListComponent
   extends ListPageComponent<GithubRepo>
@@ -21,9 +28,17 @@ export class GithubReposListComponent
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private githubReposApiService: GithubReposApiService
+    private githubReposApiService: GithubReposApiService,
+    private githubReposService: GithubReposService,
+    private cdr: ChangeDetectorRef
   ) {
     super();
+  }
+
+  public override ngOnInit(): void {
+    super.ngOnInit();
+
+    this.listenReposList();
   }
 
   public navigateToDetails(id: number): void {
@@ -45,6 +60,7 @@ export class GithubReposListComponent
       .pipe(
         finalize(() => {
           this.isLoading = false;
+          this.cdr.markForCheck();
         }),
         takeUntil(this.destroy$)
       )
@@ -54,7 +70,19 @@ export class GithubReposListComponent
       });
   }
 
+  private listenReposList(): void {
+    this.githubReposService
+      .getReposList()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((reposList: GithubRepo[]) => {
+        this.listItems = reposList;
+      });
+  }
+
   private handleReposUpdate(response: GithubReposResponse): void {
-    this.listItems = [...this.listItems, ...response.items];
+    this.githubReposService.setReposList([
+      ...this.listItems,
+      ...response.items,
+    ]);
   }
 }

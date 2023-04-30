@@ -20,6 +20,8 @@ export abstract class ListPageComponent<T>
   }
 
   public onScroll(): void {
+    if (this.isLoading) return;
+
     this.currentPage += 1;
     this.load();
   }

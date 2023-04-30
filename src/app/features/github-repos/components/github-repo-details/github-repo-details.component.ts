@@ -1,74 +1,78 @@
-import { BreakpointService } from './../../../../core/services/breakpoints.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+} from '@angular/core';
 
-import { filter, Subject, switchMap, takeUntil, Observable } from 'rxjs';
+import { filter, switchMap, takeUntil, Observable, tap, map } from 'rxjs';
 
 import { DestroyableDirective } from '../../../../core/directives/destroyable.directive';
 import { GithubReposApiService } from '../../services/github-repos-api.service';
 import { GithubRepo } from '../../interfaces/github-repo.interface';
 import { GithubReadmeResponse } from '../../interfaces/github-readme-response.interface';
+import { BreakpointService } from '../../../../core/services/breakpoints.service';
+import { GithubReposService } from '../../services/github-repos.service';
 
 @Component({
   selector: 'app-github-repo-details',
   templateUrl: './github-repo-details.component.html',
   styleUrls: ['./github-repo-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GithubRepoDetailsComponent
   extends DestroyableDirective
   implements OnInit, OnDestroy
 {
-  public repo$: Subject<GithubRepo> = new Subject<GithubRepo>();
+  public repo$: Observable<GithubRepo | null> =
+    this.githubReposService.getSelectedRepo();
   public isMobile$: Observable<boolean> = this.breakpointService.isMobile();
   public readme: string = '';
 
   public constructor(
-    private route: ActivatedRoute,
     private router: Router,
+    private cdr: ChangeDetectorRef,
+    private breakpointService: BreakpointService,
     private githubReposApiService: GithubReposApiService,
-    private breakpointService: BreakpointService
+    private githubReposService: GithubReposService
   ) {
     super();
   }
 
   public ngOnInit(): void {
-    this.listenRepoId();
-    this.listenRepoReadme();
+    this.listenSelectedRepo();
   }
 
-  private listenRepoId(): void {
-    this.route.params
-      .pipe(
-        filter((params) => !!params['id']),
-        switchMap((params) => {
-          return this.githubReposApiService.getRepoById(params['id']);
-        }),
-        takeUntil(this.destroy$)
-      )
-      .subscribe({
-        next: (repo: GithubRepo) => this.handleRepoLoaded(repo),
-        error: () => this.navigateToReposList(),
-      });
+  public override ngOnDestroy(): void {
+    this.githubReposService.selectRepo(null);
   }
 
-  private handleRepoLoaded(repo: GithubRepo): void {
-    this.repo$.next(repo);
-    this.readme = '';
+  public closeDetails(): void {
+    this.router.navigate(['']);
   }
 
-  private navigateToReposList(): void {
-    this.router.navigate(['/'], { relativeTo: this.route.parent });
-  }
-
-  private listenRepoReadme(): void {
+  private listenSelectedRepo(): void {
     this.repo$
       .pipe(
-        switchMap((repo: GithubRepo) =>
-          this.githubReposApiService.getRepoReadme(repo.url)
-        )
+        tap(() => this.resetReadme()),
+        map((repo: GithubRepo | null): GithubRepo => repo as GithubRepo),
+        filter((repo: GithubRepo) => !!repo),
+        switchMap(
+          (repo: GithubRepo): Observable<GithubReadmeResponse> =>
+            this.githubReposApiService.getRepoReadme(repo.url)
+        ),
+        map((readmeResponse: GithubReadmeResponse) => readmeResponse.content),
+        takeUntil(this.destroy$)
       )
-      .subscribe((readmeResponse: GithubReadmeResponse) => {
-        this.readme = atob(readmeResponse.content);
+      .subscribe((readme: string) => {
+        this.readme = atob(readme);
+        this.cdr.markForCheck();
       });
+  }
+
+  private resetReadme(): void {
+    this.readme = '';
   }
 }

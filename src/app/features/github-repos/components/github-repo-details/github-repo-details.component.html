@@ -1,4 +1,5 @@
-<button *ngIf="isMobile$ | async">toggle</button>
+<!-- <button *ngIf="isMobile$ | async" (click)="navigateToReposList()">close</button> -->
+<button (click)="closeDetails()">close</button>
 
 <ng-container *ngIf="repo$ | async as repo">
   <div class="github-repo-details__container">

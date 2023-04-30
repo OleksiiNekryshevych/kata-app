@@ -1,6 +1,27 @@
+import { GithubRepo } from './interfaces/github-repo.interface';
+import { GithubReposApiService } from './services/github-repos-api.service';
+import {
+  ActivatedRoute,
+  Router,
+  Event,
+  NavigationStart,
+  NavigationEnd,
+} from '@angular/router';
+import { SideNavbarEventsService } from './services/side-navbar-events.service';
 import { BreakpointService } from './../../core/services/breakpoints.service';
 import { DestroyableDirective } from './../../core/directives/destroyable.directive';
-import { takeUntil, BehaviorSubject, Subject } from 'rxjs';
+import {
+  takeUntil,
+  BehaviorSubject,
+  Subject,
+  take,
+  Observable,
+  filter,
+  switchMap,
+  tap,
+  of,
+  map,
+} from 'rxjs';
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {
   BreakpointObserver,
@@ -8,6 +29,8 @@ import {
   BreakpointState,
 } from '@angular/cdk/layout';
 import { MatDrawerMode, MatSidenav } from '@angular/material/sidenav';
+import { SideNavbarEvent } from './enum/side-navbar-event.enum';
+import { GithubReposService } from './services/github-repos.service';
 
 @Component({
   selector: 'app-github-repos',
@@ -22,19 +45,28 @@ export class GithubReposComponent
   public isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false
   );
+
   public viewMode: MatDrawerMode = 'side';
 
   @ViewChild('sideNav') private sideNav: MatSidenav;
 
   constructor(
-    private breakpointObserver: BreakpointObserver,
-    private breakpointService: BreakpointService
+    private breakpointService: BreakpointService,
+    private sideNavbarEventsService: SideNavbarEventsService,
+    private githubReposService: GithubReposService,
+    private githubReposApiService: GithubReposApiService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     super();
   }
 
   public ngOnInit(): void {
+    this.checkRepoId();
+    this.listenRouterNavigation();
+    this.listenSelectedRepoId();
     this.listenBreakpoints();
+    this.listenSideNavbarEvents();
   }
 
   public toggleSidebar(): void {
@@ -42,13 +74,11 @@ export class GithubReposComponent
   }
 
   private listenBreakpoints(): void {
-    this.breakpointObserver
-      .observe([Breakpoints.XSmall, Breakpoints.Small])
+    this.breakpointService
+      .isMobile()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((state: BreakpointState) => {
-        console.log(state);
-
-        this.isMobile$.next(state.matches);
+      .subscribe((isMobile: boolean) => {
+        this.isMobile$.next(isMobile);
         this.updateViewMode();
       });
   }
@@ -56,6 +86,72 @@ export class GithubReposComponent
   private updateViewMode(): void {
     this.viewMode = this.isMobile$.value ? 'over' : 'side';
 
-    this.viewMode === 'side' ? this.sideNav?.open() : null; //TODO: extend with close/open for mob version
+    this.isMobile$.value
+      ? this.handleSideNavForMobile()
+      : this.handleSideNavForDesktop();
+  }
+
+  private handleSideNavForMobile(): void {
+    this.route.firstChild?.params.pipe(take(1)).subscribe((params) => {
+      const event = params['id'] ? SideNavbarEvent.CLOSE : SideNavbarEvent.OPEN;
+
+      this.sideNavbarEventsService.sendEvent(event);
+    });
+  }
+
+  private handleSideNavForDesktop(): void {
+    if (this.sideNav.opened) return;
+
+    this.sideNavbarEventsService.sendEvent(SideNavbarEvent.OPEN);
+  }
+
+  private listenSelectedRepoId(): void {
+    this.githubReposService
+      .getSelectedRepoId()
+      .pipe(
+        switchMap((repoId) =>
+          repoId ? this.githubReposApiService.getRepoById(repoId) : of(null)
+        ),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((repo: GithubRepo | null) =>
+        this.githubReposService.selectRepo(repo)
+      );
+  }
+
+  private checkRepoId(): void {
+    const selectedRouterId = this.getRepoIdFromRoute();
+    this.githubReposService.setSelectedRepoId(selectedRouterId);
+  }
+
+  private listenRouterNavigation(): void {
+    this.router.events
+      .pipe(
+        filter((event: Event) => event instanceof NavigationEnd),
+        map(() => this.getRepoIdFromRoute()),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((repoId: number | null) =>
+        this.githubReposService.setSelectedRepoId(repoId || null)
+      );
+  }
+
+  private listenSideNavbarEvents(): void {
+    this.sideNavbarEventsService
+      .navbarEvents()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((event: SideNavbarEvent) => this.handleSideNavEvent(event));
+  }
+
+  private handleSideNavEvent(event: SideNavbarEvent): void {
+    event === SideNavbarEvent.OPEN
+      ? this.sideNav.open()
+      : event === SideNavbarEvent.CLOSE
+      ? this.sideNav.close()
+      : this.sideNav.toggle();
+  }
+
+  private getRepoIdFromRoute(): number | null {
+    return this.route.snapshot.firstChild?.params['id'] || null;
   }
 }
