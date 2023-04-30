@@ -1,21 +1,13 @@
 import { GithubRepo } from './interfaces/github-repo.interface';
 import { GithubReposApiService } from './services/github-repos-api.service';
-import {
-  ActivatedRoute,
-  Router,
-  Event,
-  NavigationStart,
-  NavigationEnd,
-} from '@angular/router';
+import { ActivatedRoute, Router, Event, NavigationEnd } from '@angular/router';
 import { SideNavbarEventsService } from './services/side-navbar-events.service';
 import { BreakpointService } from './../../core/services/breakpoints.service';
 import { DestroyableDirective } from './../../core/directives/destroyable.directive';
 import {
   takeUntil,
   BehaviorSubject,
-  Subject,
   take,
-  Observable,
   filter,
   switchMap,
   tap,
@@ -29,11 +21,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import {
-  BreakpointObserver,
-  Breakpoints,
-  BreakpointState,
-} from '@angular/cdk/layout';
 import { MatDrawerMode, MatSidenav } from '@angular/material/sidenav';
 import { SideNavbarEvent } from './enum/side-navbar-event.enum';
 import { GithubReposService } from './services/github-repos.service';
@@ -52,7 +39,6 @@ export class GithubReposComponent
   public isMobile$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false
   );
-
   public fluidMode: boolean;
   public viewMode: MatDrawerMode = 'side';
 

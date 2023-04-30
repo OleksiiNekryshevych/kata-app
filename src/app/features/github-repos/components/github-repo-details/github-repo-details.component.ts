@@ -11,10 +11,9 @@ import { filter, switchMap, takeUntil, Observable, tap, map } from 'rxjs';
 
 import { DestroyableDirective } from '../../../../core/directives/destroyable.directive';
 import { GithubReposApiService } from '../../services/github-repos-api.service';
+import { GithubReposService } from '../../services/github-repos.service';
 import { GithubRepo } from '../../interfaces/github-repo.interface';
 import { GithubReadmeResponse } from '../../interfaces/github-readme-response.interface';
-import { BreakpointService } from '../../../../core/services/breakpoints.service';
-import { GithubReposService } from '../../services/github-repos.service';
 
 @Component({
   selector: 'app-github-repo-details',

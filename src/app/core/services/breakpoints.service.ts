@@ -11,7 +11,7 @@ export class BreakpointService {
 
   constructor(private breakpointObserver: BreakpointObserver) {}
 
-  public checkCurrentState(): void {
+  public updateCurrentDeviceState(): void {
     const device: Device = this.breakpointObserver.isMatched([
       Breakpoints.XSmall,
       Breakpoints.Small,

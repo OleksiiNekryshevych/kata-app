@@ -47,7 +47,7 @@ export class GithubReposListComponent
   }
 
   public ngAfterViewInit(): void {
-    this.breakpointService.checkCurrentState();
+    this.breakpointService.updateCurrentDeviceState();
   }
 
   public navigateToDetails(id: number): void {
